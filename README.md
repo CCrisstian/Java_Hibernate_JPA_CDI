@@ -147,3 +147,56 @@ public class JpaUtil {
 
 <h2>ProducerResources</h2>
 
+La clase `ProducerResources` proporciona métodos para producir y gestionar instancias de conexión a la base de datos y de `EntityManager`, aprovechando CDI para inyectar y controlar el ciclo de vida de estos objetos. Incluye métodos para obtener la conexión a la base de datos, cerrar la conexión una vez finalizada su utilización, y para manejar un `EntityManager`, que es la interfaz de `JPA` para la administración de entidades en la base de datos.
+
+```java
+@ApplicationScoped
+public class ProducerResources {
+
+    @Resource(name = "jdbc/mysqlDB")
+    private DataSource ds;
+
+    @Inject
+    private Logger log;
+
+    @Produces
+    @RequestScoped
+    @MySQLConn
+    private Connection beanConnection() throws NamingException, SQLException {
+        return ds.getConnection();
+    }
+
+    public void close(@Disposes @MySQLConn Connection connection) throws SQLException {
+        connection.close();
+        log.info("Cerrando la conexión a la BD MySQL");
+    }
+
+    @Produces
+    private Logger beanLogger(InjectionPoint injectionPoint){
+        return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
+    }
+
+    @Produces
+    @RequestScoped
+    private EntityManager beanEntityManager(){
+        return JpaUtil.getEntityManager();
+    }
+
+    public void close(@Disposes EntityManager entityManager){
+        if(entityManager.isOpen()){
+            entityManager.close();
+            log.info("Cerrando la conexión del EntityManager!");
+        }
+    }
+}
+```
+
+- `@ApplicationScoped`:
+  - Propósito: La anotación `@ApplicationScoped` indica que la instancia de `ProducerResources` será única y compartida dentro del contexto de toda la aplicación.
+  - Función: Esto significa que la clase `ProducerResources` se crea una sola vez cuando la aplicación comienza y se mantiene activa mientras la aplicación está en ejecución. Al ser `ApplicationScoped`, todos los componentes que requieran un recurso de esta clase (como conexiones a la base de datos o `EntityManager`) podrán usar esta instancia única, lo que optimiza el uso de memoria y facilita la gestión de recursos de manera centralizada.
+- Inyección de DataSource:
+```java
+@Resource(name = "jdbc/mysqlDB")
+private DataSource ds;
+```
+  - Propósito: Inyecta una referencia al DataSource configurado en el servidor de aplicaciones, que proporciona una conexión a la base de datos MySQL especificada en el nombre del recurso (jdbc/mysqlDB).
