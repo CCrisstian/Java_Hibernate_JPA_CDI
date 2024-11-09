@@ -114,6 +114,7 @@ public class Usuario{
 <h2>JpaUtil</h2>
 
 La clase `JpaUtil` es una clase utilitaria en el proyecto que se encarga de administrar el ciclo de vida del `EntityManagerFactory`, un componente esencial en `JPA` para crear y gestionar instancias de `EntityManager`. La clase `JpaUtil` es clave para el acceso centralizado a la unidad de persistencia configurada en el archivo `persistence.xml`.
+
 `EntityManager` es una interfaz de `JPA` (Java Persistence API) que proporciona métodos para gestionar el ciclo de vida de las entidades, realizar consultas, y ejecutar transacciones en el contexto de una unidad de persistencia. En términos sencillos, es el objeto que te permite interactuar con la base de datos a través de las entidades definidas en el modelo de datos de tu aplicación.
 
 ```java
@@ -132,15 +133,15 @@ public class JpaUtil {
 
 - Atributos:
  - `entityManagerFactory`:
-   - Es una constante de tipo `EntityManagerFactory` inicializada mediante el método `buildEntityManagerFactory()`.
-   - Esta instancia es esencial para crear y gestionar `EntityManager` y se configura usando la unidad de persistencia llamada `"ejemploJpa"` (definida en el archivo `persistence.xml`).
+     - Es una constante de tipo `EntityManagerFactory` inicializada mediante el método `buildEntityManagerFactory()`.
+     - Esta instancia es esencial para crear y gestionar `EntityManager` y se configura usando la unidad de persistencia llamada `"ejemploJpa"` (definida en el archivo `persistence.xml`).
  - Métodos:
   - `buildEntityManagerFactory()`:
-    - Visibilidad: privado (solo accesible dentro de `JpaUtil`).
-    - Función: inicializa y devuelve una instancia de `EntityManagerFactory`, configurándola con el nombre de la unidad de persistencia `"ejemploJpa"`.
-    - Descripción: Este método es invocado una vez cuando se carga la clase, asegurando que solo exista una instancia de `EntityManagerFactory` en toda la aplicación.
+      - Visibilidad: privado (solo accesible dentro de `JpaUtil`).
+      - Función: inicializa y devuelve una instancia de `EntityManagerFactory`, configurándola con el nombre de la unidad de persistencia `"ejemploJpa"`.
+      - Descripción: Este método es invocado una vez cuando se carga la clase, asegurando que solo exista una instancia de `EntityManagerFactory` en toda la aplicación.
   - `getEntityManager()`:
-    - Visibilidad: público (accesible desde otras partes de la aplicación).
-    - Función: crea y devuelve una nueva instancia de `EntityManager` utilizando el `EntityManagerFactory`.
-    - Descripción: este método permite obtener un `EntityManager` cada vez que la aplicación necesita interactuar con la base de datos, asegurando que se respete el ciclo de vida de `EntityManager` de acuerdo con las buenas prácticas en `JPA`.
+      - Visibilidad: público (accesible desde otras partes de la aplicación).
+      - Función: crea y devuelve una nueva instancia de `EntityManager` utilizando el `EntityManagerFactory`.
+      - Descripción: este método permite obtener un `EntityManager` cada vez que la aplicación necesita interactuar con la base de datos, asegurando que se respete el ciclo de vida de `EntityManager` de acuerdo con las buenas prácticas en `JPA`.
 
