@@ -287,3 +287,25 @@ Esta anotación `@Service` está diseñada como un estereotipo personalizado que
 - `@Target(ElementType.TYPE)` y `@Retention(RetentionPolicy.RUNTIME)`:
   - `@Target(ElementType.TYPE)` especifica que esta anotación solo puede aplicarse a clases, interfaces o tipos.
   - `@Retention(RetentionPolicy.RUNTIME)` define que la anotación estará disponible en tiempo de ejecución, lo cual es necesario para que el CDI y otros marcos puedan detectar y procesar la anotación en tiempo real.
+
+<h2>TransactionalJPA y TransactionalJPAInterceptor</h2>
+<h3>TransactionalJPA</h3>
+
+La anotación `@TransactionalJPA` es una anotación de enlace de interceptor que indica que un método o clase debe ejecutarse dentro de una transacción de base de datos gestionada por JPA (Java Persistence API). Esta anotación se utiliza para marcar los métodos o clases en los que se desea que se inicie, maneje y termine una transacción.
+- `@Retention(RetentionPolicy.RUNTIME)`: Esto asegura que la anotación esté disponible en tiempo de ejecución, lo que es necesario para que el interceptor funcione correctamente.
+- `@Target({ElementType.METHOD, ElementType.TYPE})`: Esto indica que se puede aplicar tanto a métodos como a clases.
+
+<h3>TransactionalJPAInterceptor</h3>
+
+El interceptor `TransactionalJPAInterceptor` está diseñado para manejar transacciones de manera automática cuando un método o clase es marcado con la anotación `@TransactionalJPA`. Aquí está lo que sucede dentro del interceptor:
+
+- Atributos e Inyección
+  - `@Inject` EntityManager em: Inyecta el `EntityManager`, que es el objeto central para interactuar con la base de datos a través de JPA.
+  - `@Inject` Logger log: Inyecta un objeto de `Logger` para registrar el inicio y finalización de transacciones, así como los posibles errores que ocurran durante la ejecución.
+
+- Método `transactional`
+El método `transactional` es el núcleo del interceptor y maneja la lógica de la transacción. Está anotado con `@AroundInvoke`, lo que significa que se ejecutará alrededor del método invocado, gestionando la transacción.
+  - Inicio de la transacción: `em.getTransaction().begin()`; comienza una nueva transacción.
+  - Ejecución del método: `invocation.proceed()`; ejecuta el método original que fue interceptado.
+  - Commit de la transacción: Si el método se ejecuta con éxito, se hace un commit de la transacción con `em.getTransaction().commit();`.
+  - Rollback en caso de error: Si ocurre una excepción durante la ejecución del método (en este caso, se maneja la excepción `ServiceJdbcException`), la transacción se revierte mediante `em.getTransaction().rollback();` y la excepción es lanzada nuevamente.
