@@ -275,3 +275,15 @@ public void close(@Disposes EntityManager entityManager){
 |                                | JPA: `em.remove(entidad)`                      | JPA: `em.remove(entidad)`                       | JPA: `em.remove(entidad)`                       |
 | **Manejo de ID**               | JDBC: Control manual (autoincremental en BD)   | JDBC: Control manual (autoincremental en BD)    | JDBC: Control manual (autoincremental en BD)    |
 |                                | JPA: Automático en `persist`                   | JPA: Automático en `persist`                    | JPA: Automático en `persist`                    |
+
+<h2>Service</h2>
+
+Esta anotación `@Service` está diseñada como un estereotipo personalizado que centraliza varias funcionalidades y cualidades que se aplican a los servicios en la aplicación.
+
+- `@Logging`: Esta anotación agrega capacidades de registro (logging) para los servicios que la utilizan. Esto puede incluir la captura automática de mensajes de log al iniciar y finalizar métodos o manejar excepciones dentro de la clase.
+- `@ApplicationScoped`: Este alcance garantiza que el servicio anotado con `@Service` sea único y compartido en toda la aplicación, actuando como un singleton. De esta forma, los recursos de la clase se instancian una sola vez durante el ciclo de vida de la aplicación.
+- `@Stereotype`: Marca esta anotación como un "estereotipo", lo que significa que es un "meta-componente" o un agrupador de otras anotaciones. Esto permite reutilizar combinaciones de funcionalidades en varias clases, simplificando la configuración y manteniéndola en un solo lugar.
+- `@Named`: Hace que los servicios anotados con `@Service` sean detectables por el contexto de inyección de dependencias de CDI (Contexts and Dependency Injection) de Java, lo cual facilita la inyección en otras clases, especialmente en componentes de front-end como las vistas JSF.
+- `@Target(ElementType.TYPE)` y `@Retention(RetentionPolicy.RUNTIME)`:
+  - `@Target(ElementType.TYPE)` especifica que esta anotación solo puede aplicarse a clases, interfaces o tipos.
+  - `@Retention(RetentionPolicy.RUNTIME)` define que la anotación estará disponible en tiempo de ejecución, lo cual es necesario para que el CDI y otros marcos puedan detectar y procesar la anotación en tiempo real.
