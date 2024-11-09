@@ -145,3 +145,5 @@ public class JpaUtil {
       - Función: crea y devuelve una nueva instancia de `EntityManager` utilizando el `EntityManagerFactory`.
       - Descripción: este método permite obtener un `EntityManager` cada vez que la aplicación necesita interactuar con la base de datos, asegurando que se respete el ciclo de vida de `EntityManager` de acuerdo con las buenas prácticas en `JPA`.
 
+<h2>ProducerResources</h2>
+
