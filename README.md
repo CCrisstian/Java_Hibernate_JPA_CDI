@@ -114,6 +114,7 @@ public class Usuario{
 <h2>JpaUtil</h2>
 
 La clase `JpaUtil` es una clase utilitaria en el proyecto que se encarga de administrar el ciclo de vida del `EntityManagerFactory`, un componente esencial en `JPA` para crear y gestionar instancias de `EntityManager`. La clase `JpaUtil` es clave para el acceso centralizado a la unidad de persistencia configurada en el archivo `persistence.xml`.
+`EntityManager` es una interfaz de `JPA` (Java Persistence API) que proporciona métodos para gestionar el ciclo de vida de las entidades, realizar consultas, y ejecutar transacciones en el contexto de una unidad de persistencia. En términos sencillos, es el objeto que te permite interactuar con la base de datos a través de las entidades definidas en el modelo de datos de tu aplicación.
 
 ```java
 public class JpaUtil {
@@ -142,3 +143,4 @@ public class JpaUtil {
     - Visibilidad: público (accesible desde otras partes de la aplicación).
     - Función: crea y devuelve una nueva instancia de `EntityManager` utilizando el `EntityManagerFactory`.
     - Descripción: este método permite obtener un `EntityManager` cada vez que la aplicación necesita interactuar con la base de datos, asegurando que se respete el ciclo de vida de `EntityManager` de acuerdo con las buenas prácticas en `JPA`.
+
