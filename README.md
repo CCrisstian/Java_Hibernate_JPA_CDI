@@ -21,6 +21,7 @@
   - `hibernate.dialect`: define el dialecto de `Hibernate` para MySQL 8, optimizando la generación de consultas para esta versión de base de datos.
  
 <h2>Producto</h2>
+
 La clase `Producto` representa la entidad de `productos` en el sistema y define cómo se mapea cada atributo de producto a columnas en la tabla productos de la base de datos.
 
 ```java
@@ -246,3 +247,31 @@ public void close(@Disposes EntityManager entityManager){
 }
 ```
 
+<h2>Diferencias entre JDBC y JPA</h2>
+
+- Diferencias entre `ProductoRepositoryJdbcImpl` y `ProductoRepositoryJpaImpl`
+- Diferencias entre `CategoriaRepositoryJdbcImpl` y `CategoriaRepositoryJpaImpl`
+- Diferencias entre `UsuarioRepositoryJdbcImpl` y `UsuarioRepositoryJpaImpl`
+
+| Aspecto                        | ProductoRepositoryJdbcImpl / JPA               | CategoriaRepositoryJdbcImpl / JPA               | UsuarioRepositoryJdbcImpl / JPA                 |
+|--------------------------------|------------------------------------------------|------------------------------------------------|------------------------------------------------|
+| **Nivel de abstracción**       | JDBC: Bajo, SQL directo                        | JDBC: Bajo, SQL directo                         | JDBC: Bajo, SQL directo                         |
+|                                | JPA: Alto, mapeo ORM                           | JPA: Alto, mapeo ORM                            | JPA: Alto, mapeo ORM                            |
+| **Conexión**                   | JDBC: Manual (`Connection` inyectado)          | JDBC: Manual (`Connection` inyectado)           | JDBC: Manual (`Connection` inyectado)           |
+|                                | JPA: Automática (manejada por `EntityManager`) | JPA: Automática (manejada por `EntityManager`)  | JPA: Automática (manejada por `EntityManager`)  |
+| **Consultas de listado**       | JDBC: SQL directo (`SELECT * ...`)             | JDBC: SQL directo (`SELECT * FROM categorias`)  | JDBC: SQL directo (`SELECT * FROM usuarios`)    |
+|                                | JPA: JPQL (`SELECT p FROM Producto p ...`)     | JPA: JPQL (`FROM Categoria`)                    | JPA: JPQL (`FROM Usuario`)                      |
+| **Consultas por ID**           | JDBC: SQL directo con `PreparedStatement`      | JDBC: SQL directo con `PreparedStatement`       | JDBC: SQL directo con `PreparedStatement`       |
+|                                | JPA: `em.find(Entity.class, id)`               | JPA: `em.find(Entity.class, id)`                | JPA: `em.find(Entity.class, id)`                |
+| **Consultas específicas**      | JDBC: `SELECT` con SQL directo para join       | JDBC: `SELECT` sin join                         | JDBC: `SELECT * WHERE username = ?`             |
+|                                | JPA: JPQL join en consulta                     | JPA: No se necesita join                        | JPA: JPQL `WHERE u.username = :username`        |
+| **Mapeo de resultados**        | JDBC: Manual, convierte `ResultSet` a `Producto`| JDBC: Manual, convierte `ResultSet` a `Categoria`| JDBC: Manual, convierte `ResultSet` a `Usuario` |
+|                                | JPA: Automático a entidades JPA                | JPA: Automático a entidades JPA                 | JPA: Automático a entidades JPA                 |
+| **Persistencia de entidades**  | JDBC: SQL (`INSERT` / `UPDATE`)                | JDBC: Sin implementar                           | JDBC: SQL (`INSERT` / `UPDATE`)                 |
+|                                | JPA: Automática (`persist` / `merge`)          | JPA: Automática (`persist` / `merge`)           | JPA: Automática (`persist` / `merge`)           |
+| **Transacciones**              | JDBC: Explicitas, control manual               | JDBC: Explicitas, control manual                | JDBC: Explicitas, control manual                |
+|                                | JPA: Automáticas dentro del contexto JPA       | JPA: Automáticas dentro del contexto JPA        | JPA: Automáticas dentro del contexto JPA        |
+| **Eliminación de entidades**   | JDBC: SQL (`DELETE ... WHERE id=?`)            | JDBC: Sin implementar                           | JDBC: SQL (`DELETE ... WHERE id=?`)             |
+|                                | JPA: `em.remove(entidad)`                      | JPA: `em.remove(entidad)`                       | JPA: `em.remove(entidad)`                       |
+| **Manejo de ID**               | JDBC: Control manual (autoincremental en BD)   | JDBC: Control manual (autoincremental en BD)    | JDBC: Control manual (autoincremental en BD)    |
+|                                | JPA: Automático en `persist`                   | JPA: Automático en `persist`                    | JPA: Automático en `persist`                    |
