@@ -194,9 +194,55 @@ public class ProducerResources {
 - `@ApplicationScoped`:
   - Propósito: La anotación `@ApplicationScoped` indica que la instancia de `ProducerResources` será única y compartida dentro del contexto de toda la aplicación.
   - Función: Esto significa que la clase `ProducerResources` se crea una sola vez cuando la aplicación comienza y se mantiene activa mientras la aplicación está en ejecución. Al ser `ApplicationScoped`, todos los componentes que requieran un recurso de esta clase (como conexiones a la base de datos o `EntityManager`) podrán usar esta instancia única, lo que optimiza el uso de memoria y facilita la gestión de recursos de manera centralizada.
-- Inyección de DataSource:
+- Inyección de `DataSource`:
+  - Propósito: Inyecta una referencia al `DataSource` configurado en el servidor de aplicaciones, que proporciona una conexión a la base de datos MySQL especificada en el nombre del recurso (`jdbc/mysqlDB`).
+  - Función: Actúa como una fuente de conexiones para acceder a la base de datos sin tener que crear una nueva conexión manualmente cada vez.
 ```java
 @Resource(name = "jdbc/mysqlDB")
 private DataSource ds;
 ```
-  - Propósito: Inyecta una referencia al DataSource configurado en el servidor de aplicaciones, que proporciona una conexión a la base de datos MySQL especificada en el nombre del recurso (jdbc/mysqlDB).
+- Producción de una conexión a la base de datos:
+  - Propósito: Proporciona una instancia de `Connection` específica para la base de datos.
+  - Función: Utiliza la anotación `@Produces` para hacer que el `Connection` esté disponible para inyección. La anotación personalizada `@MySQLConn` ayuda a identificar esta conexión específica.
+```java
+@Produces
+@RequestScoped
+@MySQLConn
+private Connection beanConnection() throws NamingException, SQLException {
+    return ds.getConnection();
+}
+```
+
+- Cierre de la conexión a la base de datos:
+  - Propósito: Libera recursos cerrando la conexión de base de datos cuando ya no se necesita.
+  - Función: La anotación `@Disposes` indica a CDI que este método debe ser llamado cuando el `Connection` inyectado se está descartando, asegurando una liberación adecuada de los recursos.
+```java
+public void close(@Disposes @MySQLConn Connection connection) throws SQLException {
+    connection.close();
+    log.info("Cerrando la conexión a la BD MySQL");
+}
+```
+
+- Producción de un `EntityManager`
+  - Propósito: Proporciona un `EntityManager` para la gestión de las entidades en `JPA`.
+  - Función: Facilita la administración de transacciones `JPA` para operaciones CRUD sobre entidades. Utiliza `JpaUtil.getEntityManager()` para obtener el `EntityManager` configurado.
+```java
+@Produces
+@RequestScoped
+private EntityManager beanEntityManager(){
+    return JpaUtil.getEntityManager();
+}
+```
+
+- Cierre del `EntityManager`:
+  - Propósito: Libera el `EntityManager` al finalizar su uso.
+  - Función: Cierra el `EntityManager` si está abierto, asegurando la correcta liberación de recursos `JPA`. También registra la acción de cierre en la consola.
+```java
+public void close(@Disposes EntityManager entityManager){
+    if(entityManager.isOpen()){
+        entityManager.close();
+        log.info("Cerrando la conexión del EntityManager!");
+    }
+}
+```
+
